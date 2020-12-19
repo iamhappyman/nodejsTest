@@ -18,6 +18,8 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+//웹 섭스에서 보여줄 파일 (이미지, 파일 , css) 저장하고 있는 위치
 app.use(express.static(path.join(__dirname, 'public')));
 
 
