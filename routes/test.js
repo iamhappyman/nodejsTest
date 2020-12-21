@@ -6,7 +6,7 @@ var router = express.Router();
 
 //"http://localhost:3000/test/" "/""
 router.get('/', function(req, res, next) {
-  res.render('test', { title: '노드 테스트 페이지' });
+  res.render('test', { title: '**노드 테스트 title**' });
 });
 
 //"http://localhost:3000/test/" "/page/1""
