@@ -20,15 +20,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-//웹 섭스에서 보여줄 파일 (이미지, 파일 , css) 저장하고 있는 위치
+//웹서비스에서 보여줄 파일(이미지, 동영상, 파일, CSS, 자바스크립트 파일 등)을 저장하고있는 위치
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/test', testRouter);
-app.use('/eth', ethRouter);
-
+app.use('/test',testRouter);
+app.use('/eth',ethRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

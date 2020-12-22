@@ -1,10 +1,13 @@
 var express = require('express');
+const { render } = require('pug');
 var router = express.Router();
+
+require('dotenv').config();
+
 
 const Web3 = require('web3')
 let web3 = new Web3(
-    //나중에 유로 서비스 이용 가능 
-    new Web3.providers.WebsocketProvider("wss://ropsten.infura.io/ws/v3/395ab90b2f134ea78d0bd652496f4e17")
+    new Web3.providers.WebsocketProvider(process.env.INFURA_RPC_URL)
 )
 
 
@@ -35,8 +38,20 @@ router.get('/getTx/:txhash', function(req, res, next){
 
     // transaction Receipt
     web3.eth.getTransactionReceipt( txHash , function(err,receipt){
+        if(err){
+            next(err)
+            return
+        }
         web3.eth.getTransaction( txHash, function(err,tx){
+            if(err){
+                next(err)
+                return
+            }
             web3.eth.getBlock(tx.blockHash,false, function(err, block){
+                if(err){
+                    next(err)
+                    return
+                }
                 var data={time:0,fee:0}
                 var datetime = block.timestamp*1000;
 
@@ -51,6 +66,23 @@ router.get('/getTx/:txhash', function(req, res, next){
     })
 });
 
+router.get('/transferEth', function(req, res, next){
+    var private_key = process.env.ETH_PRIVATE_KEY;
+    var _account = web3.eth.accounts.privateKeyToAccount(private_key)
+
+    web3.eth.getBalance(_account.address, function(err,balance){
+
+        var account = {
+            address : _account.address,
+            balance : web3.utils.fromWei(balance,'ether')
+        }
+        res.render('transferEth',{account:account})
+    })
+})
+
+router.post('/transferEth', function(res,req,next){
+    res.send("test")
+})
 
 
 module.exports = router;
