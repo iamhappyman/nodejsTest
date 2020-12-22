@@ -1,0 +1,18 @@
+extends layout
+
+block content
+        
+    h1 Transaction Info ##{ tx.hash} 
+    p Transaction Hash: #{ tx.hash} 
+    p Status          : #{ receipt.status}
+    p Block           : #{ tx.blockNumber}
+    p Timestamp       : #{ data.time}
+    p From            : #{ receipt.from}
+    p To              : #{ receipt.from}
+    p Value           : #{ tx.value}
+    p Transaction Fee : #{ data.fee}
+    p Gas Price       : #{ tx.gasPrice}
+    p Gas Limit       : #{ tx.gas}
+    p Gas Used        : #{ receipt.gasUsed}
+    p Nonce           : #{ tx.nonce}
+    p Input Data      : #{ tx.input}
