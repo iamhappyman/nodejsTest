@@ -1,0 +1,12 @@
+
+extends layout
+
+block content
+    h1 투표 리스트 (Factory: #{data.factory.address})
+    p 개설된 투표 수 #{data.factory.count}
+    ul
+        each vote in data.votelist
+            li
+                a(href="https://ropsten.etherscan.io/address/"+vote.address) #{vote.title}
+                p 총 투표수 : #{vote.votingCount}
+                p 투표마감 : #{vote.voteClosing}
