@@ -70,6 +70,7 @@ router.get('/transferEth', function(req, res, next){
     var private_key = process.env.ETH_PRIVATE_KEY;
     var _account = web3.eth.accounts.privateKeyToAccount(private_key)
 
+    var bestGasPrice = // todo  infu
     web3.eth.getBalance(_account.address, function(err,balance){
 
         var account = {
@@ -80,8 +81,46 @@ router.get('/transferEth', function(req, res, next){
     })
 })
 
-router.post('/transferEth', function(res,req,next){
-    res.send("test")
+router.post('/transferEth', function(req,res,next){
+    var transferInfo = req.body
+    var private_key = process.env.ETH_PRIVATE_KEY;
+    var _account = web3.eth.accounts.privateKeyToAccount(private_key)
+
+    web3.eth.getTransactionCount(_account.address, function(err,nonce){
+        var gasPrice = web3.utils.toWei(transferInfo.gasPrice,'gwei')
+        var rawTx={
+            nonce: web3.utils.toHex(nonce),
+            from: _account.address,
+            gasLimit: web3.utils.toHex(25000),
+            gasPrice: web3.utils.toHex(gasPrice),
+            to : transferInfo.address,
+            value : web3.utils.toWei(transferInfo.amount,'ether')
+        }
+        _account.signTransaction(rawTx, function( err, signedTx){
+            if(err){
+                next(err)
+                return
+            }
+            
+
+            web3.eth.sendSignedTransaction(signedTx.rawTransaction)
+            .on('transactionHash', function(hash){
+                console.log(hash);
+            })
+            .on('receipt',function(receipt){
+                console.log("Transcation send Finished")
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                console.log( '#',confirmationNumber ,"Confirmed")
+                if(confirmationNumber == 6){
+                    res.redirect("https://ropsten.etherscan.io/tx/"+receipt.transactionHash)
+                }
+            })
+            .on('error', function(err){
+                next(error)
+            })
+        })
+    })
 })
 
 
