@@ -1,0 +1,278 @@
+extends layout
+
+
+
+
+block content
+
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.1/web3.min.js")
+    script(id='voteABI' type="application/json").
+        [
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "_title",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "_timeLimit",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "name": "VoteFinish",
+                "type": "event"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "numberOfSubjectItems",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "name": "subjectItems",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "subjectList",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "timeLimit",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "title",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "_subject",
+                        "type": "string"
+                    }
+                ],
+                "name": "vote",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "voteCount",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "_subject",
+                        "type": "string"
+                    }
+                ],
+                "name": "voteCountof",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "voter",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ]
+    script.
+        var account=""
+        if (typeof window.ethereum !== 'undefined') {
+            window.ethereum.request({ method: 'eth_requestAccounts' }).then((result)=>{
+                account = result[0]
+                console.log(result)
+                document.getElementById('metamask_id').innerHTML = account
+            }) 
+        }
+
+        ethereum.on('accountsChanged', (accounts)=>{
+            prev_account = document.getElementById('metamask_id').innerHTML;
+            if(prev_account!=" "){
+                console.log(prev_account)
+                alert("계정정보가 바뀌었습니다. ("
+                        +prev_account +") -> ("
+                        +accounts[0]+")")
+            }
+            account =  accounts[0]
+            document.getElementById('metamask_id').innerHTML = accounts[0]
+        })
+        ethereum.on('chainChanged',(chainId)=>{
+            if(chainId != '0x3'){
+                alert("이더리움 네트워크가 "+chainId+"변경되었습니다. Ropsten Network가 아니면 사용에 제약이 있습니다.")
+            }else{
+                alert("Ropsten Network에 연결되었습니다.")
+            }
+        })
+
+        function Vote(){
+            // 어떤걸 선택했는지 확인
+            checked = document.querySelector('input[name="subject"]:checked')
+            alert(checked.value)
+
+        
+            // Transation Data 생성
+            //  - InputData 인코딩 (Contract ABI, web3js)
+            abi = JSON.parse(document.getElementById('voteABI').innerHTML)
+            contractAddress = document.getElementById('contractAddress').value
+            
+            ethereum.request( {
+                method : 'eth_sendTransaction',
+                params :[{
+                    from:  account,
+                    data:'',
+                    to: contractAddress
+                }]
+            }).then((result)=>{
+                console.log(result)
+            })
+            // 메타마스크에 트랜잭션 전송 요청
+        }
+
+    
+    h1 #{title}
+    p(id='contractAddress' value=contractAddress) #{contractAddress}
+    h2 현재 접속중인 EthereumAccount
+        p(id = 'metamask_id') 
+    p 현재 투표 수 : #{votingCount}
+    p 투표 종료시간 : #{votingClose}
+    form(action="", method="post")
+        each subject in subjectList
+            input(type="radio", name="subject" value=subject.title)
+            |#{subject.title} (투표 수: #{subject.point})
+    
+    input(type="submit", value="투표" onClick="Vote()")

@@ -10,15 +10,18 @@ const Web3 = require('web3')
 let web3 = new Web3(
     new Web3.providers.WebsocketProvider(process.env.INFURA_RPC_URL)
 )
-let voteAbi = JSON.parse( fs.readFileSync('abis/vote.abi.json'))
+
+const voteFactoryAbi = JSON.parse( fs.readFileSync('abis/voteFactory.abi.json') )
+const voteFactoryContract = new web3.eth.Contract(voteFactoryAbi, process.env.CONTRACT_ADDR_VOTE)
+
+const voteAbi = JSON.parse( fs.readFileSync('abis/vote.abi.json'))
 let voteContract = new web3.eth.Contract( voteAbi, "0x0000000000000000000000000000000000000000")
 
 
 //localhost:3000/vote
 router.get("/", async function(req,res,next){
     
-    var voteFactoryAbi = JSON.parse( fs.readFileSync('abis/voteFactory.abi.json') )
-    var voteFactoryContract = new web3.eth.Contract(voteFactoryAbi, process.env.CONTRACT_ADDR_VOTE)
+    
 
     // ** 컨트랙트를 호출하는 두가지 방법
     // call() : 상수함수들 view/pure, public으로 지정된 상태변수
@@ -76,5 +79,41 @@ router.get("/", async function(req,res,next){
 
     res.render('voteDashboard',{data:data});
 })
+
+router.get("/:id", async function(req,res,next){
+    let id = req.params.id;
+
+    
+    let voteAddress = await voteFactoryContract.methods.findVoteByIndex(id).call()
+    voteContract.options.address = voteAddress
+
+    let title = await voteContract.methods.title().call()
+    let votingCount = await voteContract.methods.voteCount().call();
+    let voteClosing = await voteContract.methods.timeLimit().call(); // sec 단위
+    voteClosing = new Date(voteClosing*1000).toLocaleString("ko-KR", {timeZone: "Asia/Seoul"})
+
+    let num_subjectItem = await voteContract.methods.numberOfSubjectItems().call();
+    let subjectList=[];
+
+    for(let i=0; i<num_subjectItem ;i++){
+        subjectTitle = await voteContract.methods.subjectList(i).call();
+        point = await voteContract.methods.subjectItems(subjectTitle).call()
+        subjectList.push({
+            title:subjectTitle,
+            point:point
+        })
+    }
+
+    let data = {
+        contractAddress: voteAddress,
+        title:title,
+        votingCount : votingCount,
+        votingClose : voteClosing,
+        subjectList : subjectList
+
+    }
+    res.render('voteDetail',data)
+})
+
 
 module.exports = router;
