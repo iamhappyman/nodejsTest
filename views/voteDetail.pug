@@ -211,6 +211,7 @@ block content
             }
         ]
     script.
+        web3 = new Web3()
         var account=""
         if (typeof window.ethereum !== 'undefined') {
             window.ethereum.request({ method: 'eth_requestAccounts' }).then((result)=>{
@@ -242,19 +243,23 @@ block content
         function Vote(){
             // 어떤걸 선택했는지 확인
             checked = document.querySelector('input[name="subject"]:checked')
+            if(checked.value == ''){
+                checked = document.querySelector('input[name="newSubject"]')
+            }
             alert(checked.value)
 
         
             // Transation Data 생성
             //  - InputData 인코딩 (Contract ABI, web3js)
             abi = JSON.parse(document.getElementById('voteABI').innerHTML)
-            contractAddress = document.getElementById('contractAddress').value
-            
+            contractAddress = document.getElementById('contractAddress').innerHTML
+            contract = new web3.eth.Contract(abi,contractAddress)
+            input_data= contract.methods.vote(checked.value).encodeABI();
             ethereum.request( {
                 method : 'eth_sendTransaction',
                 params :[{
                     from:  account,
-                    data:'',
+                    data: input_data,
                     to: contractAddress
                 }]
             }).then((result)=>{
@@ -274,5 +279,7 @@ block content
         each subject in subjectList
             input(type="radio", name="subject" value=subject.title)
             |#{subject.title} (투표 수: #{subject.point})
+        input(type='radio' name='subject' value='')
+        input(type='text' name='newSubject' placeholder="새로운 항목 입력")
     
     input(type="submit", value="투표" onClick="Vote()")
