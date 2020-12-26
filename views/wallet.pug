@@ -1,0 +1,57 @@
+extends layout
+
+
+block content
+
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.1/web3.min.js")
+    script.
+        web3 = new Web3()
+        if (typeof window.ethereum !== 'undefined') {
+            window.ethereum.request({ method: 'eth_requestAccounts' }).then((result)=>{
+                account = result[0]
+                console.log(result)
+                document.getElementById('metamask_id').innerHTML = account
+                getEthBalance(account)
+            }) 
+        }
+
+        ethereum.on('accountsChanged', (accounts)=>{
+            prev_account = document.getElementById('metamask_id').innerHTML;
+            if(prev_account!=" "){
+                console.log(prev_account)
+                alert("계정정보가 바뀌었습니다. ("
+
+                        +prev_account +") -> ("
+                        +accounts[0]+")")
+            }
+            account =  accounts[0]
+            document.getElementById('metamask_id').innerHTML = accounts[0]
+            getEthBalance(account)
+        })
+
+        function getEthBalance(account){
+            window.ethereum.request({ method: 'eth_getBalance', 
+                                      params:[account, 'latest']})
+            .then((result)=>{
+                balance = web3.utils.fromWei(result,'ether')
+                document.getElementById('ethBalance').innerHTML = +balance+" ETH"
+            }) 
+        }
+
+        function getTokenBalance(){
+            list = document.QuerySelectorAll('')
+        }
+    
+    
+    h1 지갑 서비스
+    p(id='metamask_id')
+    p 보유중인 이더리움 :
+        p(id='ethBalance')
+    p 소유한 토큰
+        each token in tokenList
+            li(id='tokenAddress' value=token.tokenAddress) #{token.tokenAddress}
+                p(id='tokenName')
+                p(id='tokenBalace')
+
+
+    p 토큰 및 이더리움 전송

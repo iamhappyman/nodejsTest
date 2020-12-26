@@ -9,6 +9,7 @@ var usersRouter = require('./routes/users');
 var testRouter = require('./routes/test');
 var ethRouter = require('./routes/ethereum');
 var voteRouter = require('./routes/vote');
+var walletRouter = require('./routes/wallet');
 
 
 var app = express();
@@ -30,6 +31,7 @@ app.use('/users', usersRouter);
 app.use('/test',testRouter);
 app.use('/eth',ethRouter);
 app.use('/vote',voteRouter);
+app.use('/wallet',walletRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
