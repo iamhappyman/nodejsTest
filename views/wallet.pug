@@ -302,7 +302,7 @@ block content
                 }).then((result)=>{
                     name = web3.utils.hexToUtf8(result)
                     console.log("tokenName:"+name)
-                    tokenAddress.children.tokenName.innerText = name;
+                    tokenAddress.children.tokenName.innerText = name+" : ";
                 })
 
                 //Get Symbol
@@ -318,11 +318,9 @@ block content
                 }).then((result)=>{
                     balance = web3.utils.fromWei(result,'ether')
                     console.log("tokenBalance:"+balance)
-                    tokenAddress.children.tokenBalance.innerText = balance;
+                    tokenAddress.children.tokenBalance.innerText = balance+" ";
                 })
             })
-
-
         }
     
     h1 지갑 서비스
@@ -332,9 +330,12 @@ block content
     p 소유한 토큰
         each token in tokenList
             li(id='tokenAddress' value=token.tokenAddress) #{token.tokenAddress}
-                p(id='tokenName')
-                p(id='tokenBalance')
-                p(id='symbol')
-
-
+                
+                span(id='tokenName')
+                span(id='tokenBalance')
+                span(id='symbol')
+    
+    form(action="/wallet/regist", method="post")
+        input(type='text' name='newTokenAddress' placeholder="0x123abc")
+        input(type='submit' value='토큰등록') 
     p 토큰 및 이더리움 전송
