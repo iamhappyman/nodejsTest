@@ -3,15 +3,266 @@ extends layout
 
 block content
 
+    script(id='tokenABI' type="application/json").
+        [
+            {
+                "inputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "_owner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "_spender",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Approval",
+                "type": "event"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "approve",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transfer",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "_from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "_to",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Transfer",
+                "type": "event"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transferFrom",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "owner",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "spender",
+                        "type": "address"
+                    }
+                ],
+                "name": "allowance",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "owner",
+                        "type": "address"
+                    }
+                ],
+                "name": "balanceOf",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "decimals",
+                "outputs": [
+                    {
+                        "internalType": "uint8",
+                        "name": "",
+                        "type": "uint8"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "name",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "symbol",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "totalSupply",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ]
+
     script(src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.3.1/web3.min.js")
     script.
         web3 = new Web3()
         if (typeof window.ethereum !== 'undefined') {
-            window.ethereum.request({ method: 'eth_requestAccounts' }).then((result)=>{
+            ethereum.request({ method: 'eth_requestAccounts' }).then((result)=>{
                 account = result[0]
                 console.log(result)
                 document.getElementById('metamask_id').innerHTML = account
                 getEthBalance(account)
+                getTokenBalance()
             }) 
         }
 
@@ -20,13 +271,13 @@ block content
             if(prev_account!=" "){
                 console.log(prev_account)
                 alert("계정정보가 바뀌었습니다. ("
-
                         +prev_account +") -> ("
                         +accounts[0]+")")
             }
             account =  accounts[0]
             document.getElementById('metamask_id').innerHTML = accounts[0]
             getEthBalance(account)
+            getTokenBalance()
         })
 
         function getEthBalance(account){
@@ -39,9 +290,40 @@ block content
         }
 
         function getTokenBalance(){
-            list = document.QuerySelectorAll('')
+            list = document.querySelectorAll('li[id="tokenAddress"]')
+            userAccount = document.getElementById('metamask_id').innerHTML
+            list.forEach((tokenAddress)=>{
+                contractAddress = tokenAddress.innerText;
+                //name, symbol, balance
+                abi = JSON.parse(document.getElementById('tokenABI').innerHTML)
+                contract = new web3.eth.Contract(abi, contractAddress)
+                //Get Name
+                ethereum.request( {method : 'eth_call',params :[{data: contract.methods.name().encodeABI() ,to: contractAddress}]
+                }).then((result)=>{
+                    name = web3.utils.hexToUtf8(result)
+                    console.log("tokenName:"+name)
+                    tokenAddress.children.tokenName.innerText = name;
+                })
+
+                //Get Symbol
+                ethereum.request( {method : 'eth_call',params :[{data: contract.methods.symbol().encodeABI() ,to: contractAddress}]
+                }).then((result)=>{
+                    symbol = web3.utils.hexToUtf8(result)
+                    console.log("tokenSymbol:"+symbol)
+                    tokenAddress.children.symbol.innerText = symbol;
+                })
+
+                //GetBalcance
+                ethereum.request( {method : 'eth_call',params :[{data: contract.methods.balanceOf(userAccount).encodeABI() ,to: contractAddress}]
+                }).then((result)=>{
+                    balance = web3.utils.fromWei(result,'ether')
+                    console.log("tokenBalance:"+balance)
+                    tokenAddress.children.tokenBalance.innerText = balance;
+                })
+            })
+
+
         }
-    
     
     h1 지갑 서비스
     p(id='metamask_id')
@@ -51,7 +333,8 @@ block content
         each token in tokenList
             li(id='tokenAddress' value=token.tokenAddress) #{token.tokenAddress}
                 p(id='tokenName')
-                p(id='tokenBalace')
+                p(id='tokenBalance')
+                p(id='symbol')
 
 
     p 토큰 및 이더리움 전송
