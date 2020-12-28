@@ -290,29 +290,13 @@ block content
         }
 
         function getTokenBalance(){
-            list = document.querySelectorAll('li[id="tokenAddress"]')
-            userAccount = document.getElementById('metamask_id').innerHTML
+            list = document.querySelectorAll('div[id="tokenAddress"]')
+            userAccount = document.getElementById('metamask_id').innerText
             list.forEach((tokenAddress)=>{
-                contractAddress = tokenAddress.innerText;
+                contractAddress = tokenAddress.attributes.value.value;
                 //name, symbol, balance
                 abi = JSON.parse(document.getElementById('tokenABI').innerHTML)
                 contract = new web3.eth.Contract(abi, contractAddress)
-                //Get Name
-                ethereum.request( {method : 'eth_call',params :[{data: contract.methods.name().encodeABI() ,to: contractAddress}]
-                }).then((result)=>{
-                    name = web3.utils.hexToUtf8(result)
-                    console.log("tokenName:"+name)
-                    tokenAddress.children.tokenName.innerText = name+" : ";
-                })
-
-                //Get Symbol
-                ethereum.request( {method : 'eth_call',params :[{data: contract.methods.symbol().encodeABI() ,to: contractAddress}]
-                }).then((result)=>{
-                    symbol = web3.utils.hexToUtf8(result)
-                    console.log("tokenSymbol:"+symbol)
-                    tokenAddress.children.symbol.innerText = symbol;
-                })
-
                 //GetBalcance
                 ethereum.request( {method : 'eth_call',params :[{data: contract.methods.balanceOf(userAccount).encodeABI() ,to: contractAddress}]
                 }).then((result)=>{
@@ -322,20 +306,88 @@ block content
                 })
             })
         }
+
+        function sendToken(contract_address, to ,amount){
+            alert(to+" 에게" +amount+" token 전송 "+"컨트랙트 주소 : "+contract_address)
+
+            //사용자의 계정(주소) 획득
+            account = document.getElementById('metamask_id').innerHTML;
+
+            //ABI 정보를 통한 컨트랙트 객체 생성
+            abi = JSON.parse(document.getElementById('tokenABI').innerHTML)
+            contract = new web3.eth.Contract(abi, contract_address)
+
+            //토큰의 단위 변경 (Ether to Wei)
+            amount = web3.utils.toWei(amount,'ether')
+
+            //컨트랙트에 전송할 데이터 인코딩(transfer 함수 호출을 위한 정보)
+            input_data = contract.methods.transfer(to, amount).encodeABI()
+
+            // JSON-RPC를 이용한 트랜잭션 전송 요청
+            ethereum.request( {
+                method :'eth_sendTransaction',
+                params:[{
+                    to:     contract_address,
+                    data:  input_data,
+                    from:   account
+                }]
+            }).then(result =>{
+                //전송 완료 후의 Transaction Hash 값
+                console.log(result)
+            })
+        }
+
+        function sendEth(to, amount){
+            alert(to+" 에게" +amount+" 이더리움 전송 ")
+            account = document.getElementById('metamask_id').innerHTML;
+            amount_hex = web3.utils.toHex( web3.utils.toWei(amount,'ether') )
+            ethereum.request( {
+                method : 'eth_sendTransaction',
+                params :[{
+                    from:  account,
+                    to: to,
+                    value: amount_hex
+                }]
+            }).then((result)=>{
+                console.log(result)
+            })
+
+        }
+        function sendCurrency(){
+            to = document.querySelectorAll('input[name="to"]')[0].value;
+            amount = document.querySelectorAll('input[name="amount"]')[0].value;
+            if(document.querySelectorAll('select')[0].value == 'ETH')
+            {
+                sendEth(to, amount)
+            } else
+            {
+                contract_address = document.querySelectorAll('select')[0].value;
+                sendToken(contract_address, to, amount);
+            }
+        }
+        
     
     h1 지갑 서비스
     p(id='metamask_id')
     p 보유중인 이더리움 :
         p(id='ethBalance')
     p 소유한 토큰
-        each token in tokenList
-            li(id='tokenAddress' value=token.tokenAddress) #{token.tokenAddress}
-                
-                span(id='tokenName')
-                span(id='tokenBalance')
-                span(id='symbol')
+    each token in tokenList
+        div(id='tokenAddress' value=token.tokenAddress) #{token.tokenAddress}
+            il(id='tokenName') #{token.name}  :
+            il(id='tokenBalance')
+            il(id='symbol')  (#{token.symbol})
     
     form(action="/wallet/regist", method="post")
         input(type='text' name='newTokenAddress' placeholder="0x123abc")
         input(type='submit' value='토큰등록') 
     p 토큰 및 이더리움 전송
+
+        input(type='number' name='amount' step=0.0001)
+        input(type='text' name='to' placeholder='0x1a2b3c...')
+        select(name="currency")
+            option(value='ETH') Ethereum (ETH)
+            each token in tokenList
+                option(value=token.tokenAddress) #{token.name} (#{token.symbol})
+        button(onClick='sendCurrency()') 토큰 전송
+
